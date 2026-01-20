@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_CREDENTIALS = credentials('dockerhub-credentials')
+    }
     stages {
         stage('Lint') {
             steps {
@@ -24,6 +27,7 @@ pipeline {
         }
         stage('Build') {
             steps {
+                sh 'echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin'
                 sh 'docker build --network host -t stephdjbg/flask-app:0.0.1 .'
                 sh 'docker push stephdjbg/flask-app:0.0.1'
             }
